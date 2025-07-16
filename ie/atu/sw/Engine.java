@@ -1,0 +1,152 @@
+package ie.atu.sw;
+
+import java.nio.charset.StandardCharsets;
+import java.nio.file.*;
+import java.util.Arrays;
+import java.util.Scanner;
+
+record Item(String base, String code) implements Comparable<Item> {
+    public int compareTo(Item i) {
+        if (this.base().length() != i.base().length()) {
+            return i.base().length() - this.base().length();
+        }
+
+        return this.base().compareTo(i.base());
+    }
+}
+
+public class Engine {
+    private static String mappingFileName = "./encodings-10000.csv";
+    private static String workFileName = "./test.txt";
+    private static String outputFileName = "./out.txt";
+    private static Item[] words;
+    private static Item[] suffixes;
+    private static String[] workDocument;
+
+    private static String[] readFile(String fileName) throws Exception {
+        try {
+            return Files.readAllLines(Paths.get(fileName), StandardCharsets.UTF_8).toArray(new String[0]);
+        } catch (Exception e) {
+            throw new Exception("Error reading file: " + fileName);
+        }
+    }
+
+    private static String[] transformToLowCase(String lines[]) {
+        for (var i = 0; i < lines.length; i++) {
+            lines[i] = lines[i].toLowerCase();
+        }
+
+        return lines;
+    }
+
+    private static void parseVocabulary(String lines[]) {
+        var suffixesCounter = 0;
+        var wordsCounter = 0;
+
+        for (var line : lines) {
+            var parts = line.split(",");
+
+            if (parts.length != 2) {
+                continue;
+            }
+
+            if (parts[0].startsWith("@@")) {
+                suffixesCounter += 1;
+            } else {
+                wordsCounter += 1;
+            }
+        }
+
+        Engine.words = new Item[wordsCounter];
+        Engine.suffixes = new Item[suffixesCounter];
+        wordsCounter = 0;
+        suffixesCounter = 0;
+
+        for (var line : lines) {
+            var parts = line.split(",");
+
+            if (parts.length != 2) {
+                continue;
+            }
+
+            if (parts[0].startsWith("@@")) {
+                Engine.suffixes[suffixesCounter] = new Item(parts[0].substring(2), parts[1]);
+                suffixesCounter += 1;
+            } else {
+                Engine.words[wordsCounter] = new Item(parts[0], parts[1]);
+                wordsCounter += 1;
+            }
+        }
+
+        Arrays.sort(Engine.words, (a, b) -> a.compareTo(b));
+        Arrays.sort(Engine.suffixes, (a, b) -> a.compareTo(b));
+    }
+
+    public static void readVocabulary() throws Exception {
+        var lines = Engine.readFile(Engine.mappingFileName);
+
+        if (lines.length == 0) {
+            throw new Exception("Empty vocabulary!!!");
+        }
+
+        Engine.parseVocabulary(lines);
+    }
+
+    public static void uploadVocabulary() {
+        // Using Scanner for Getting Input from User
+        System.out.println("Input Mapping File Name [Default - encodings-10000.csv]>");
+        Scanner s = new Scanner(System.in);
+        var fileName = s.nextLine();
+
+        if (fileName.length() != 0) {
+            Engine.mappingFileName = fileName;
+        }
+
+        System.out.println("Current mapping file: " + Engine.mappingFileName);
+
+        try {
+            Engine.readVocabulary();
+            System.out.println("Was Uploaded:");
+            System.out.println("Words - " + Engine.words.length);
+            System.out.println("Words Suffixes - " + Engine.suffixes.length);
+
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+        }
+    }
+
+    public static void uploadWorkFile() {
+        System.out.println("Input Work File Name [Default - test.txt]>");
+        Scanner s = new Scanner(System.in);
+        var fileName = s.nextLine();
+
+        if (fileName.length() != 0) {
+            Engine.workFileName = fileName;
+        }
+
+        System.out.println("Current work file: " + Engine.workFileName);
+
+        try {
+            Engine.readWorkFile();
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+        }
+
+        if (Engine.workDocument != null) {
+            System.out.println(Engine.workDocument.length);
+        }
+
+    }
+
+    public static void readWorkFile() throws Exception {
+        var lines = Engine.readFile(Engine.workFileName);
+        lines = Engine.transformToLowCase(lines);
+
+        if (lines.length == 0) {
+            throw new Exception("Empty work file!!!");
+        }
+
+        Engine.workDocument = lines;
+    }
+
+}
