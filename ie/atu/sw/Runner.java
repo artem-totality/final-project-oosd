@@ -22,7 +22,7 @@ public class Runner {
             System.out.println("*                                                          *");
             System.out.println("************************************************************");
             System.out.println("(1) Upload Mapping File");
-            System.out.println("(2) Upload Text File to Encode");
+            System.out.println("(2) Upload Work Text File");
             System.out.println("(3) Specify Output File (default: ./out.txt)");
             System.out.println("(4) Current System Status");
             System.out.println("(5) Encode Text File");
@@ -39,18 +39,32 @@ public class Runner {
             switch (choice) {
                 case "1":
                     Engine.uploadVocabulary();
+                    System.out.println();
+                    System.out.println("Please press Enter to continue.");
                     s.nextLine();
                     break;
                 case "2":
                     Engine.uploadWorkFile();
+                    System.out.println();
+                    System.out.println("Please press Enter to continue.");
                     s.nextLine();
                     break;
                 case "3":
                     Engine.specifyOutputFile();
+                    System.out.println();
+                    System.out.println("Please press Enter to continue.");
                     s.nextLine();
                     break;
                 case "4":
                     Engine.showSystemStatus();
+                    System.out.println();
+                    System.out.println("Please press Enter to continue.");
+                    s.nextLine();
+                    break;
+                case "6":
+                    Engine.decodeTextFile();
+                    System.out.println();
+                    System.out.println("Please press Enter to continue.");
                     s.nextLine();
                     break;
                 case "7":
@@ -58,6 +72,7 @@ public class Runner {
                     return;
                 default:
                     System.out.println("Please input number between 1 and 7!");
+                    System.out.println();
                     System.out.println("Please press Enter to continue.");
                     s.nextLine();
                     break;

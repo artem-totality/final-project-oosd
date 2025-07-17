@@ -17,8 +17,9 @@ record Item(String base, String code) implements Comparable<Item> {
 }
 
 public class Engine {
+    private static final String SEPARATOR = ", ";
     private static String mappingFileName = "./encodings-10000.csv";
-    private static String workFileName = "./test.txt";
+    private static String workFileName = "./encoded.txt";
     private static String outputFileName = "./out.txt";
     private static Item[] words;
     private static Item[] suffixes;
@@ -45,6 +46,18 @@ public class Engine {
             return Files.readAllLines(Paths.get(fileName), StandardCharsets.UTF_8).toArray(new String[0]);
         } catch (Exception e) {
             throw new Exception("Error reading file: " + fileName);
+        }
+    }
+
+    private static void writeFile(String fileName, String[] lines) throws Exception {
+        try {
+            System.out.println(fileName);
+
+            for (var line : lines) {
+                System.out.println(line);
+            }
+        } catch (Exception e) {
+            throw new Exception("Error writing file: " + fileName);
         }
     }
 
@@ -114,16 +127,12 @@ public class Engine {
 
     public static void uploadVocabulary() {
         // Using Scanner for Getting Input from User
-        System.out.print("Input Mapping File Name [Default - ./encodings-10000.csv]> ");
+        System.out.print("Input Mapping File Name [Default - " + Engine.mappingFileName + "]> ");
         Scanner s = new Scanner(System.in);
         var fileName = s.nextLine();
 
         if (fileName.length() != 0) {
-            if (Engine.validateStringFilenameUsingIO(fileName)) {
-                Engine.outputFileName = fileName;
-            } else {
-                System.out.println("Invalid file name!!!");
-            }
+            Engine.mappingFileName = fileName;
         }
 
         System.out.println("Current mapping file: " + Engine.mappingFileName);
@@ -150,16 +159,12 @@ public class Engine {
     }
 
     public static void uploadWorkFile() {
-        System.out.print("Input Work File Name [Default - ./test.txt]> ");
+        System.out.print("Input Work File Name [Default - " + Engine.workFileName + "]> ");
         Scanner s = new Scanner(System.in);
         var fileName = s.nextLine();
 
         if (fileName.length() != 0) {
-            if (Engine.validateStringFilenameUsingIO(fileName)) {
-                Engine.outputFileName = fileName;
-            } else {
-                System.out.println("Invalid file name!!!");
-            }
+            Engine.workFileName = fileName;
         }
 
         System.out.println("Current work file: " + Engine.workFileName);
@@ -177,7 +182,7 @@ public class Engine {
     }
 
     public static void specifyOutputFile() {
-        System.out.print("Specify Output File Name [Default - ./out.txt]> ");
+        System.out.print("Specify Output File Name [Default - " + Engine.outputFileName + "]> ");
         Scanner s = new Scanner(System.in);
         var fileName = s.nextLine();
 
@@ -207,10 +212,62 @@ public class Engine {
         if (Engine.workDocument != null) {
             System.out.println("Lines uploaded: " + Engine.workDocument.length);
         } else {
-            System.out.println("Nothing uploaded.");
+            System.out.println("Work file is not uploaded.");
         }
         System.out.println();
 
         System.out.println("Current output file: " + Engine.outputFileName);
+    }
+
+    private static String decodeLine(String line) throws Exception {
+        var decodedLine = "";
+        var codes = line.split(", ");
+
+        try {
+            for (var code : codes) {
+                if (code.length() == 0)
+                    continue;
+
+                var codeInt = Integer.parseInt(code);
+                var textItem = Engine.plainVocabulary[codeInt];
+
+                if (textItem.startsWith("@@")) {
+                    decodedLine = decodedLine.concat(textItem.substring(2));
+                } else {
+                    decodedLine = decodedLine.concat(" ".concat(textItem));
+                }
+            }
+        } catch (Exception e) {
+            throw new Exception("Decoding error!!!");
+        }
+
+        return decodedLine;
+    }
+
+    public static void decodeTextFile() {
+        if (Engine.plainVocabulary == null) {
+            System.out.println("Mapping file is not uploaded.");
+            return;
+        }
+
+        if (Engine.workDocument == null) {
+            System.out.println("Work file is not uploaded.");
+            return;
+        }
+        String[] outputDocument = new String[Engine.workDocument.length];
+
+        System.out.println("Start processing...");
+        System.out.println();
+
+        try {
+            for (var i = 0; i < workDocument.length; i++) {
+                outputDocument[i] = Engine.decodeLine(workDocument[i]);
+            }
+
+            Engine.writeFile(Engine.outputFileName, outputDocument);
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+        }
+
     }
 }
