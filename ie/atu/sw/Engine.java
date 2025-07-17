@@ -23,6 +23,7 @@ public class Engine {
     private static Item[] words;
     private static Item[] suffixes;
     private static String[] workDocument;
+    private static String[] plainVocabulary;
 
     public static boolean validateStringFilenameUsingIO(String filename) {
         File file = new File(filename);
@@ -75,6 +76,7 @@ public class Engine {
 
         Engine.words = new Item[wordsCounter];
         Engine.suffixes = new Item[suffixesCounter];
+        Engine.plainVocabulary = new String[wordsCounter + suffixesCounter];
         wordsCounter = 0;
         suffixesCounter = 0;
 
@@ -84,6 +86,8 @@ public class Engine {
             if (parts.length != 2) {
                 continue;
             }
+
+            Engine.plainVocabulary[wordsCounter + suffixesCounter] = parts[0];
 
             if (parts[0].startsWith("@@")) {
                 Engine.suffixes[suffixesCounter] = new Item(parts[0].substring(2), parts[1]);
@@ -129,7 +133,6 @@ public class Engine {
             System.out.println("Was Uploaded:");
             System.out.println("Words - " + Engine.words.length);
             System.out.println("Words Suffixes - " + Engine.suffixes.length);
-
         } catch (Exception e) {
             System.err.println(e.getMessage());
         }
