@@ -31,8 +31,7 @@ public class Runner {
 
             // Output a menu of options and solicit text from the user
             System.out.print(ConsoleColour.BLACK_BOLD_BRIGHT);
-            System.out.print("Select Option [1-?]>");
-            System.out.println();
+            System.out.print("Select Option [1-?]> ");
 
             var choice = s.nextLine();
             Runner.clearConsole();
@@ -44,6 +43,14 @@ public class Runner {
                     break;
                 case "2":
                     Engine.uploadWorkFile();
+                    s.nextLine();
+                    break;
+                case "3":
+                    Engine.specifyOutputFile();
+                    s.nextLine();
+                    break;
+                case "4":
+                    Engine.showSystemStatus();
                     s.nextLine();
                     break;
                 case "7":

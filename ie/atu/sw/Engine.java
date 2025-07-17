@@ -1,5 +1,6 @@
 package ie.atu.sw;
 
+import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.util.Arrays;
@@ -22,6 +23,21 @@ public class Engine {
     private static Item[] words;
     private static Item[] suffixes;
     private static String[] workDocument;
+
+    public static boolean validateStringFilenameUsingIO(String filename) {
+        File file = new File(filename);
+        boolean created = false;
+        try {
+            created = file.createNewFile();
+            return created;
+        } catch (Exception e) {
+            return created;
+        } finally {
+            if (created) {
+                file.delete();
+            }
+        }
+    }
 
     private static String[] readFile(String fileName) throws Exception {
         try {
@@ -94,12 +110,16 @@ public class Engine {
 
     public static void uploadVocabulary() {
         // Using Scanner for Getting Input from User
-        System.out.println("Input Mapping File Name [Default - encodings-10000.csv]>");
+        System.out.print("Input Mapping File Name [Default - ./encodings-10000.csv]> ");
         Scanner s = new Scanner(System.in);
         var fileName = s.nextLine();
 
         if (fileName.length() != 0) {
-            Engine.mappingFileName = fileName;
+            if (Engine.validateStringFilenameUsingIO(fileName)) {
+                Engine.outputFileName = fileName;
+            } else {
+                System.out.println("Invalid file name!!!");
+            }
         }
 
         System.out.println("Current mapping file: " + Engine.mappingFileName);
@@ -115,29 +135,6 @@ public class Engine {
         }
     }
 
-    public static void uploadWorkFile() {
-        System.out.println("Input Work File Name [Default - test.txt]>");
-        Scanner s = new Scanner(System.in);
-        var fileName = s.nextLine();
-
-        if (fileName.length() != 0) {
-            Engine.workFileName = fileName;
-        }
-
-        System.out.println("Current work file: " + Engine.workFileName);
-
-        try {
-            Engine.readWorkFile();
-        } catch (Exception e) {
-            System.err.println(e.getMessage());
-        }
-
-        if (Engine.workDocument != null) {
-            System.out.println(Engine.workDocument.length);
-        }
-
-    }
-
     public static void readWorkFile() throws Exception {
         var lines = Engine.readFile(Engine.workFileName);
         lines = Engine.transformToLowCase(lines);
@@ -149,4 +146,68 @@ public class Engine {
         Engine.workDocument = lines;
     }
 
+    public static void uploadWorkFile() {
+        System.out.print("Input Work File Name [Default - ./test.txt]> ");
+        Scanner s = new Scanner(System.in);
+        var fileName = s.nextLine();
+
+        if (fileName.length() != 0) {
+            if (Engine.validateStringFilenameUsingIO(fileName)) {
+                Engine.outputFileName = fileName;
+            } else {
+                System.out.println("Invalid file name!!!");
+            }
+        }
+
+        System.out.println("Current work file: " + Engine.workFileName);
+
+        try {
+            Engine.readWorkFile();
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+        }
+
+        if (Engine.workDocument != null) {
+            System.out.println("Lines uploaded: " + Engine.workDocument.length);
+        }
+
+    }
+
+    public static void specifyOutputFile() {
+        System.out.print("Specify Output File Name [Default - ./out.txt]> ");
+        Scanner s = new Scanner(System.in);
+        var fileName = s.nextLine();
+
+        if (fileName.length() != 0) {
+            if (Engine.validateStringFilenameUsingIO(fileName)) {
+                Engine.outputFileName = fileName;
+            } else {
+                System.out.println("Invalid file name!!!");
+            }
+        }
+
+        System.out.println("Current output file: " + Engine.outputFileName);
+    }
+
+    public static void showSystemStatus() {
+        System.out.println("Current mapping file: " + Engine.mappingFileName);
+        if (Engine.words != null && Engine.suffixes != null) {
+            System.out.println("Was Uploaded:");
+            System.out.println("Words - " + Engine.words.length);
+            System.out.println("Words Suffixes - " + Engine.suffixes.length);
+        } else {
+            System.out.println("Mapping file is not uploaded.");
+        }
+        System.out.println();
+
+        System.out.println("Current work file: " + Engine.workFileName);
+        if (Engine.workDocument != null) {
+            System.out.println("Lines uploaded: " + Engine.workDocument.length);
+        } else {
+            System.out.println("Nothing uploaded.");
+        }
+        System.out.println();
+
+        System.out.println("Current output file: " + Engine.outputFileName);
+    }
 }
