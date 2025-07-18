@@ -61,6 +61,12 @@ public class Runner {
                     System.out.println("Please press Enter to continue.");
                     s.nextLine();
                     break;
+                case "5":
+                    Engine.encodeTextFile();
+                    System.out.println();
+                    System.out.println("Please press Enter to continue.");
+                    s.nextLine();
+                    break;
                 case "6":
                     Engine.decodeTextFile();
                     System.out.println();

@@ -1,6 +1,7 @@
 package ie.atu.sw;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.util.Arrays;
@@ -19,7 +20,7 @@ record Item(String base, String code) implements Comparable<Item> {
 public class Engine {
     private static final String SEPARATOR = ", ";
     private static String mappingFileName = "./encodings-10000.csv";
-    private static String workFileName = "./encoded.txt";
+    private static String workFileName = "./test2.txt";
     private static String outputFileName = "./out.txt";
     private static Item[] words;
     private static Item[] suffixes;
@@ -50,11 +51,11 @@ public class Engine {
     }
 
     private static void writeFile(String fileName, String[] lines) throws Exception {
-        try {
-            System.out.println(fileName);
+        try (var fileWriter = new FileWriter(fileName)) {
+            // System.out.println(fileName);
 
             for (var line : lines) {
-                System.out.println(line);
+                fileWriter.write(line + "\n");
             }
         } catch (Exception e) {
             throw new Exception("Error writing file: " + fileName);
@@ -221,7 +222,7 @@ public class Engine {
 
     private static String decodeLine(String line) throws Exception {
         var decodedLine = "";
-        var codes = line.split(", ");
+        var codes = line.split(Engine.SEPARATOR);
 
         try {
             for (var code : codes) {
@@ -268,6 +269,35 @@ public class Engine {
         } catch (Exception e) {
             System.err.println(e.getMessage());
         }
+    }
 
+    private static String encodeLine(String line) throws Exception {
+        return line;
+    }
+
+    public static void encodeTextFile() {
+        if (Engine.plainVocabulary == null) {
+            System.out.println("Mapping file is not uploaded.");
+            return;
+        }
+
+        if (Engine.workDocument == null) {
+            System.out.println("Work file is not uploaded.");
+            return;
+        }
+        String[] outputDocument = new String[Engine.workDocument.length];
+
+        System.out.println("Start processing...");
+        System.out.println();
+
+        try {
+            for (var i = 0; i < workDocument.length; i++) {
+                outputDocument[i] = Engine.encodeLine(workDocument[i]);
+            }
+
+            Engine.writeFile(Engine.outputFileName, outputDocument);
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+        }
     }
 }
