@@ -40,37 +40,39 @@ public class Runner {
                 case "1":
                     Engine.uploadVocabulary();
                     System.out.println();
-                    System.out.println("Please press Enter to continue.");
+                    System.out.println("Please press Enter to continue...");
                     s.nextLine();
                     break;
                 case "2":
                     Engine.uploadWorkFile();
                     System.out.println();
-                    System.out.println("Please press Enter to continue.");
+                    System.out.println("Please press Enter to continue...");
                     s.nextLine();
                     break;
                 case "3":
                     Engine.specifyOutputFile();
                     System.out.println();
-                    System.out.println("Please press Enter to continue.");
+                    System.out.println("Please press Enter to continue...");
                     s.nextLine();
                     break;
                 case "4":
                     Engine.showSystemStatus();
                     System.out.println();
-                    System.out.println("Please press Enter to continue.");
+                    System.out.println("Please press Enter to continue...");
                     s.nextLine();
                     break;
                 case "5":
                     Engine.encodeTextFile();
                     System.out.println();
-                    System.out.println("Please press Enter to continue.");
+                    System.out.println();
+                    System.out.println("Please press Enter to continue...");
                     s.nextLine();
                     break;
                 case "6":
                     Engine.decodeTextFile();
                     System.out.println();
-                    System.out.println("Please press Enter to continue.");
+                    System.out.println();
+                    System.out.println("Please press Enter to continue...");
                     s.nextLine();
                     break;
                 case "7":
@@ -79,7 +81,7 @@ public class Runner {
                 default:
                     System.out.println("Please input number between 1 and 7!");
                     System.out.println();
-                    System.out.println("Please press Enter to continue.");
+                    System.out.println("Please press Enter to continue...");
                     s.nextLine();
                     break;
             }

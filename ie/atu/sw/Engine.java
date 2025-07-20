@@ -20,7 +20,7 @@ record Item(String base, String code) implements Comparable<Item> {
 public class Engine {
     private static final String SEPARATOR = ", ";
     private static String mappingFileName = "./encodings-10000.csv";
-    private static String workFileName = "./test2.txt";
+    private static String workFileName = "./test.txt";
     private static String outputFileName = "./out.txt";
     private static Item[] words;
     private static Item[] suffixes;
@@ -52,10 +52,8 @@ public class Engine {
 
     private static void writeFile(String fileName, String[] lines) throws Exception {
         try (var fileWriter = new FileWriter(fileName)) {
-            // System.out.println(fileName);
-
-            for (var line : lines) {
-                fileWriter.write(line + "\n");
+            for (var i = 0; i < lines.length; i++) {
+                fileWriter.write(lines[i] + "\n");
             }
         } catch (Exception e) {
             throw new Exception("Error writing file: " + fileName);
@@ -225,7 +223,9 @@ public class Engine {
         var codes = line.split(Engine.SEPARATOR);
 
         try {
-            for (var code : codes) {
+            for (var i = 0; i < codes.length; i++) {
+                var code = codes[i];
+
                 if (code.length() == 0)
                     continue;
 
@@ -235,7 +235,7 @@ public class Engine {
                 if (textItem.startsWith("@@")) {
                     decodedLine = decodedLine.concat(textItem.substring(2));
                 } else {
-                    decodedLine = decodedLine.concat(" ".concat(textItem));
+                    decodedLine = decodedLine.concat(i == 0 ? textItem : " ".concat(textItem));
                 }
             }
         } catch (Exception e) {
@@ -263,6 +263,7 @@ public class Engine {
         try {
             for (var i = 0; i < workDocument.length; i++) {
                 outputDocument[i] = Engine.decodeLine(workDocument[i]);
+                Runner.printProgress(i + 1, workDocument.length);
             }
 
             Engine.writeFile(Engine.outputFileName, outputDocument);
@@ -271,8 +272,81 @@ public class Engine {
         }
     }
 
+    private static String[] encodeToken(String token) {
+        if (token.equals(" "))
+            return new String[0];
+
+        for (var word : Engine.words) {
+            if (token.equals(word.base())) {
+                return new String[] { word.code() };
+            }
+
+            if (token.startsWith(word.base())) {
+                var wordReminder = token.substring(word.base().length());
+
+                for (var suffix : suffixes) {
+                    if (wordReminder.equals(suffix.base())) {
+                        return new String[] { word.code(), suffix.code() };
+                    }
+                }
+            }
+        }
+
+        return new String[] { "0" };
+    }
+
     private static String encodeLine(String line) throws Exception {
-        return line;
+        if (line.length() == 0)
+            return line;
+
+        var tokens = new String[line.length()];
+        var tokenCounter = 0;
+        var isNewWord = true;
+        var currentToken = "";
+
+        for (var ch : line.toCharArray()) {
+            if (isNewWord) {
+                if (Character.isLetterOrDigit(ch)) {
+                    currentToken = currentToken.concat(Character.toString(ch));
+                    isNewWord = false;
+                    continue;
+                } else {
+                    tokens[tokenCounter] = Character.toString(ch);
+                    tokenCounter += 1;
+                    continue;
+                }
+            } else {
+                if (Character.isLetterOrDigit(ch)) {
+                    currentToken = currentToken.concat(Character.toString(ch));
+                    continue;
+                } else {
+                    tokens[tokenCounter] = currentToken;
+                    currentToken = "";
+                    isNewWord = true;
+                    tokenCounter += 1;
+                    tokens[tokenCounter] = Character.toString(ch);
+                    tokenCounter += 1;
+                }
+            }
+        }
+
+        if (!currentToken.equals("")) {
+            tokens[tokenCounter] = currentToken;
+            tokenCounter += 1;
+        }
+
+        var result = "";
+
+        for (var i = 0; i < tokenCounter; i++) {
+            var token = tokens[i];
+            var encoded = Engine.encodeToken(token);
+
+            for (var code : encoded) {
+                result = result.concat(result.isEmpty() ? code : ", ".concat(code));
+            }
+        }
+
+        return result;
     }
 
     public static void encodeTextFile() {
@@ -293,6 +367,7 @@ public class Engine {
         try {
             for (var i = 0; i < workDocument.length; i++) {
                 outputDocument[i] = Engine.encodeLine(workDocument[i]);
+                Runner.printProgress(i + 1, workDocument.length);
             }
 
             Engine.writeFile(Engine.outputFileName, outputDocument);
