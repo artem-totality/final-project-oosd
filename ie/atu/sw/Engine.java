@@ -20,7 +20,7 @@ record Item(String base, String code) implements Comparable<Item> {
 public class Engine {
     private static final String SEPARATOR = ", ";
     private static String mappingFileName = "./encodings-10000.csv";
-    private static String workFileName = "./test.txt";
+    private static String workFileName = "./lord.txt";
     private static String outputFileName = "./out.txt";
     private static Item[] words;
     private static Item[] suffixes;
@@ -277,14 +277,18 @@ public class Engine {
             return new String[0];
 
         for (var word : Engine.words) {
-            if (token.equals(word.base())) {
-                return new String[] { word.code() };
-            }
-
             if (token.startsWith(word.base())) {
+                if (token.length() == word.base().length()) {
+                    return new String[] { word.code() };
+                }
+
                 var wordReminder = token.substring(word.base().length());
 
                 for (var suffix : suffixes) {
+                    if (wordReminder.length() > suffix.base().length()) {
+                        break;
+                    }
+
                     if (wordReminder.equals(suffix.base())) {
                         return new String[] { word.code(), suffix.code() };
                     }
@@ -365,10 +369,16 @@ public class Engine {
         System.out.println();
 
         try {
+            var startTime = System.currentTimeMillis();
+
             for (var i = 0; i < workDocument.length; i++) {
                 outputDocument[i] = Engine.encodeLine(workDocument[i]);
                 Runner.printProgress(i + 1, workDocument.length);
             }
+
+            var endTime = System.currentTimeMillis();
+            System.out.println();
+            System.out.println(endTime - startTime);
 
             Engine.writeFile(Engine.outputFileName, outputDocument);
         } catch (Exception e) {
