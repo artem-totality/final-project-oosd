@@ -488,7 +488,7 @@ public class Engine {
             // print out time spent
             System.out.println();
             System.out.println();
-            System.out.println("File " + Engine.workFileName + "was encoded for: " + (endTime - startTime) + " ms");
+            System.out.println("File " + Engine.workFileName + " was encoded for: " + (endTime - startTime) + " ms");
 
             // write result to the output file
             FileIO.writeFile(Engine.outputFileName, outputDocument);
