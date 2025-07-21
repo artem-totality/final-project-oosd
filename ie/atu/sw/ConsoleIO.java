@@ -1,6 +1,7 @@
 package ie.atu.sw;
 
 public class ConsoleIO {
+    // method clears console for the next output
     public final static void clearConsole() {
         System.out.print("\033[H\033[2J");
         System.out.flush();

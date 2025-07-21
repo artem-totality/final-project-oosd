@@ -356,7 +356,7 @@ public class Engine {
             // if token start with given word
             if (token.startsWith(word.base())) {
                 // if token and word length are equal then - match
-                // return corresponding code
+                // return corresponding code [word]
                 if (token.length() == word.base().length()) {
                     return new String[] { word.code() };
                 }
@@ -383,19 +383,27 @@ public class Engine {
         }
 
         // if we get here - nothing was found
-        // return code zero - [???]
+        // return code ["0"] - "[???]"
         return new String[] { "0" };
     }
 
+    // method divides line on tokens and encodes it
     private static String encodeLine(String line) throws Exception {
+        // if the line is empty just return it
         if (line.length() == 0)
             return line;
 
+        // allocate for the tokens array with length equal
+        // to numbers of string characters (atmost case)
         var tokens = new String[line.length()];
+        // initialise variablles before starting tokenisation
         var tokenCounter = 0;
         var isNewWord = true;
         var currentToken = "";
 
+        // in the loop split the line into tokens
+        // word - continuous sequence letters or digits
+        // all another characters consider as separate tokens
         for (var ch : line.toCharArray()) {
             if (isNewWord) {
                 if (Character.isLetterOrDigit(ch)) {
@@ -422,13 +430,17 @@ public class Engine {
             }
         }
 
+        // if we have last unadded word - add it to the tokens array
         if (!currentToken.equals("")) {
             tokens[tokenCounter] = currentToken;
             tokenCounter += 1;
         }
 
+        // initialise resulting string
         var result = "";
 
+        // in the loop encode every token and concatinate
+        // codes into resullting string
         for (var i = 0; i < tokenCounter; i++) {
             var token = tokens[i];
             var encoded = Engine.encodeToken(token);
@@ -438,15 +450,19 @@ public class Engine {
             }
         }
 
+        // return resulting string
         return result;
     }
 
+    // method encode work document
     public static void encodeTextFile() {
+        // check if vocabulary uploaded
         if (Engine.plainVocabulary == null) {
             System.out.println("Mapping file is not uploaded.");
             return;
         }
 
+        // check if work document uploaded
         if (Engine.workDocument == null) {
             System.out.println("Work file is not uploaded.");
             return;
@@ -456,20 +472,28 @@ public class Engine {
         System.out.println("Start processing...");
         System.out.println();
 
+        // try to encode work document
         try {
+            // define start time
             var startTime = System.currentTimeMillis();
 
+            // in the loop encode line by line and show progress
             for (var i = 0; i < workDocument.length; i++) {
                 outputDocument[i] = Engine.encodeLine(workDocument[i]);
                 ConsoleIO.printProgress(i + 1, workDocument.length);
             }
 
+            // define end time
             var endTime = System.currentTimeMillis();
+            // print out time spent
             System.out.println();
             System.out.println();
             System.out.println("File " + Engine.workFileName + "was encoded for: " + (endTime - startTime) + " ms");
 
+            // write result to the output file
             FileIO.writeFile(Engine.outputFileName, outputDocument);
+
+            // in case of error show appropriate message
         } catch (Exception e) {
             System.err.println(e.getMessage());
         }
