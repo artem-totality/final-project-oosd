@@ -1,9 +1,6 @@
 package ie.atu.sw;
 
 import java.io.File;
-import java.io.FileWriter;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.*;
 import java.util.Arrays;
 import java.util.Scanner;
 
@@ -39,24 +36,6 @@ public class Engine {
             if (created) {
                 file.delete();
             }
-        }
-    }
-
-    private static String[] readFile(String fileName) throws Exception {
-        try {
-            return Files.readAllLines(Paths.get(fileName), StandardCharsets.UTF_8).toArray(new String[0]);
-        } catch (Exception e) {
-            throw new Exception("Error reading file: " + fileName);
-        }
-    }
-
-    private static void writeFile(String fileName, String[] lines) throws Exception {
-        try (var fileWriter = new FileWriter(fileName)) {
-            for (var i = 0; i < lines.length; i++) {
-                fileWriter.write(lines[i] + "\n");
-            }
-        } catch (Exception e) {
-            throw new Exception("Error writing file: " + fileName);
         }
     }
 
@@ -115,7 +94,7 @@ public class Engine {
     }
 
     public static void readVocabulary() throws Exception {
-        var lines = Engine.readFile(Engine.mappingFileName);
+        var lines = FileIO.readFile(Engine.mappingFileName);
 
         if (lines.length == 0) {
             throw new Exception("Empty vocabulary!!!");
@@ -143,11 +122,13 @@ public class Engine {
             System.out.println("Words Suffixes - " + Engine.suffixes.length);
         } catch (Exception e) {
             System.err.println(e.getMessage());
+            Engine.words = null;
+            Engine.suffixes = null;
         }
     }
 
     public static void readWorkFile() throws Exception {
-        var lines = Engine.readFile(Engine.workFileName);
+        var lines = FileIO.readFile(Engine.workFileName);
         lines = Engine.transformToLowCase(lines);
 
         if (lines.length == 0) {
@@ -170,14 +151,12 @@ public class Engine {
 
         try {
             Engine.readWorkFile();
+
+            System.out.println("Lines uploaded: " + Engine.workDocument.length);
         } catch (Exception e) {
             System.err.println(e.getMessage());
+            Engine.workDocument = null;
         }
-
-        if (Engine.workDocument != null) {
-            System.out.println("Lines uploaded: " + Engine.workDocument.length);
-        }
-
     }
 
     public static void specifyOutputFile() {
@@ -263,10 +242,10 @@ public class Engine {
         try {
             for (var i = 0; i < workDocument.length; i++) {
                 outputDocument[i] = Engine.decodeLine(workDocument[i]);
-                Runner.printProgress(i + 1, workDocument.length);
+                ConsoleIO.printProgress(i + 1, workDocument.length);
             }
 
-            Engine.writeFile(Engine.outputFileName, outputDocument);
+            FileIO.writeFile(Engine.outputFileName, outputDocument);
         } catch (Exception e) {
             System.err.println(e.getMessage());
         }
@@ -373,14 +352,15 @@ public class Engine {
 
             for (var i = 0; i < workDocument.length; i++) {
                 outputDocument[i] = Engine.encodeLine(workDocument[i]);
-                Runner.printProgress(i + 1, workDocument.length);
+                ConsoleIO.printProgress(i + 1, workDocument.length);
             }
 
             var endTime = System.currentTimeMillis();
             System.out.println();
-            System.out.println(endTime - startTime);
+            System.out.println();
+            System.out.println("File " + Engine.workFileName + "was encoded for: " + (endTime - startTime) + " ms");
 
-            Engine.writeFile(Engine.outputFileName, outputDocument);
+            FileIO.writeFile(Engine.outputFileName, outputDocument);
         } catch (Exception e) {
             System.err.println(e.getMessage());
         }
