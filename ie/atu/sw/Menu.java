@@ -73,6 +73,7 @@ public class Menu {
                     break;
                 case "7":
                     System.out.println("Bye, bye!");
+                    s.close();
                     return;
                 // if was entered wrong option ask to repeat the process
                 default:

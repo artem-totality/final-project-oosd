@@ -125,7 +125,7 @@ public class Engine {
     }
 
     // method reads and parses vocabulary from mapping file
-    public static void readVocabulary() throws Exception {
+    private static void readVocabulary() throws Exception {
         // read file as String array
         var lines = FileIO.readFile(Engine.mappingFileName);
 
@@ -174,7 +174,7 @@ public class Engine {
 
     // method reads work file and saves it to the workDocument variable
     // as String array
-    public static void readWorkFile() throws Exception {
+    private static void readWorkFile() throws Exception {
         // read work file as String array
         var lines = FileIO.readFile(Engine.workFileName);
 
