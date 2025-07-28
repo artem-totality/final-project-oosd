@@ -18,7 +18,7 @@ public class Menu {
             System.out.println("************************************************************");
             System.out.println("(1) Upload Mapping File");
             System.out.println("(2) Upload Work Text File");
-            System.out.println("(3) Specify Output File (default: ./out.txt)");
+            System.out.println("(3) Specify Output File");
             System.out.println("(4) Current System Status");
             System.out.println("(5) Encode Text File");
             System.out.println("(6) Decode Text File");

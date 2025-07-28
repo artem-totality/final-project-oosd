@@ -215,12 +215,7 @@ public class Engine {
         // validate output file name
         // (check is it possible to use such file name for output)
         if (fileName.length() != 0) {
-            if (FileIO.validateStringFilenameUsingIO(fileName)) {
-                Engine.outputFileName = fileName;
-            } else {
-                // if entered file name is invalid show appropriate message
-                System.out.println("Invalid file name!!!");
-            }
+            Engine.outputFileName = fileName;
         }
 
         // print out current output file name
@@ -371,7 +366,7 @@ public class Engine {
     }
 
     // method divides line on tokens and encodes it
-    private static String encodeLine(String line) throws Exception {
+    private static String encodeLine(String line) {
         // if the line is empty just return it
         if (line.length() == 0)
             return line;
@@ -429,7 +424,7 @@ public class Engine {
             var encoded = Engine.encodeToken(token);
 
             for (var code : encoded) {
-                result = result.concat(result.isEmpty() ? code : ", ".concat(code));
+                result = result.concat(result.isEmpty() ? code : Engine.SEPARATOR.concat(code));
             }
         }
 
