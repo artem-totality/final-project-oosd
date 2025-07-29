@@ -38,7 +38,7 @@ public class Engine {
 
     // Method parses mapping words
     // separate words and suffixes and sotrs them
-    private static void parseVocabulary(String lines[]) throws Exception {
+    private static void parseVocabulary(String[] lines) throws Exception {
         // reset words and suffixes counters
         var suffixesCounter = 0;
         var wordsCounter = 0;
